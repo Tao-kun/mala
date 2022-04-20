@@ -61,9 +61,9 @@ class WirePeerClient:
         self.pieces_received_num = 0
         self.pieces = None
 
-    async def connect(self, ip, port, loop):
+    async def connect(self, ip, port):
         self.reader, self.writer = await asyncio.open_connection(
-            ip, port, loop=loop
+            ip, port
         )
 
     def close(self):
@@ -154,13 +154,10 @@ class WirePeerClient:
                 self.request_piece(self.pieces_received_num)
 
 
-async def get_metadata(infohash, ip, port, loop=None):
-    if not loop:
-        loop = asyncio.get_event_loop()
-
+async def get_metadata(infohash, ip, port):
     client = WirePeerClient(infohash)
     try:
-        await client.connect(ip, port, loop)
+        await client.connect(ip, port)
         return await client.work()
     except Exception as e:
         client.close()
